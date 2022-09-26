@@ -11,7 +11,6 @@
   </head>
   <body>
     <button onclick="connect()">Connect</button>
-    <button onclick="bluetoothSend('+CT,TURNANGLE=20;')">R+20</button>
     Rotations Speed
     <input
       type="range"
@@ -63,7 +62,11 @@
         <button id="sp_step_back">sp_step_back</button>
       </p>
     </div>
-    ;
+
+    <div id="info" style="background-color: cornflowerblue">
+      <p>use keyboard press "a" and "d" to rotate one step</p>
+      <p>use keyboard press "w" and "s" to tilt one step</p>
+    </div>
 
     <script>
       /**
@@ -185,11 +188,11 @@
           console.log(`Key "${e.key}" repeating [event: keydown]`);
         }
         switch (e.key) {
-          case "a":
+          case "d":
             bluetoothSend("+CT,TURNANGLE=1;");
             break;
 
-          case "d":
+          case "a":
             bluetoothSend("+CT,TURNANGLE=-1;");
             break;
 
