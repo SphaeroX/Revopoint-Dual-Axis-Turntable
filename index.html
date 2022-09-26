@@ -11,7 +11,17 @@
   </head>
   <body>
     <button onclick="connect()">Connect</button>
-    <button onclick="bluetoothSend('+CT,TURNANGLE=90;')">+90</button>
+    <button onclick="bluetoothSend('+CT,STOP;')">Stop Rotation</button>
+    <button onclick="bluetoothSend('+CT,TURNANGLE=20;')">R+20</button>
+    Rotations Speed
+    <input
+      type="range"
+      min="35.64"
+      max="130"
+      value="35.64"
+      id="rotation_speed"
+      onchange="set_rotation_speed(this)"
+    />
     <script>
       /**
        * Mit nRFConnect verbinden
@@ -20,6 +30,7 @@
        **/
 
       let server = false;
+      let tiltvalue = 0;
 
       async function connect() {
         const device = await navigator.bluetooth.requestDevice({
@@ -38,6 +49,56 @@
 
         characteristic.writeValue(enc.encode(cmd));
       }
+
+      function set_rotation_speed(event) {
+        console.log(`+CT,TURNSPEED=${event.value};`);
+        bluetoothSend(`+CT,TURNSPEED=${event.value};`);
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (!e.repeat) {
+          console.log(`Key "${e.key}" pressed [event: keydown]`);
+        } else {
+          console.log(`Key "${e.key}" repeating [event: keydown]`);
+        }
+        switch (e.key) {
+          case "a":
+            bluetoothSend("+CT,TURNANGLE=1;");
+            break;
+
+          case "d":
+            bluetoothSend("+CT,TURNANGLE=-1;");
+            break;
+
+          case "w":
+            tiltvalue = tiltvalue + 1;
+            if (tiltvalue > 30) {
+              tiltvalue = 30;
+            }
+            bluetoothSend(`+CR,TILTVALUE=${tiltvalue};`);
+            break;
+
+          case "s":
+            tiltvalue = tiltvalue + -1;
+            if (tiltvalue < -30) {
+              tiltvalue = -30;
+            }
+            console.log(tiltvalue);
+            bluetoothSend(`+CR,TILTVALUE=${tiltvalue};`);
+            break;
+
+          case "e":
+            bluetoothSend(`+CR,TILTVALUE=${tiltvalue};`);
+            break;
+
+          case "q":
+            bluetoothSend(`+CR,TILTVALUE=${tiltvalue};`);
+            break;
+
+          default:
+            break;
+        }
+      });
     </script>
   </body>
 </html>
