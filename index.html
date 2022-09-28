@@ -13,23 +13,21 @@
 
 <body>
   <button onclick="connect()">Connect</button>
-  Rotations Speed
-  <input type="range" min="35.64" max="130" value="35.64" id="rotation_speed" onchange="set_rotation_speed(this)" />
 
   <div id="control" style="background-color: bisque">
     <p>Rotate</p>
     <p>
-      <button id="ct_backward">
-        <<< /button>
-          <input type="text" id="ct_turnangle" value="10" />
-          <button id="ct_forward">>></button>
-          <button onclick="bluetoothSend('+CT,STOP;')">Stop Rotation (e)</button>
+      <button id="ct_backward"> &larr;</button>
+      <input type="text" id="ct_turnangle" value="10" />
+      <button id="ct_forward">&rarr;</button>
+      <button onclick="bluetoothSend('+CT,TURNANGLE=360;')">360° (r)</button>
+      <button onclick="bluetoothSend('+CT,STOP;')">Stop Rotation (e)</button>
     </p>
     <p>Tilt</p>
     <button id="cr_backward">+</button>
     <input type="text" id="cr_turnangle" value="5" />
     <button id="cr_forward">-</button>
-    <button id="cr_zero">To Zero (q)</button>
+    <button id="cr_zero">To Zero (q)</button> - (w) (s) are singlestep
   </div>
 
   <div id="scan_proc" style="background-color: aquamarine">
@@ -59,9 +57,10 @@
     </p>
   </div>
 
-  <div id="info" style="background-color: cornflowerblue">
-    <p>use keyboard press "a" and "d" to rotate one step</p>
-    <p>use keyboard press "w" and "s" to tilt one step</p>
+  <div id="info" style="background-color:greenyellow">
+    <p>Rotations Speed</p>
+    <input type="range" min="35.64" max="100" value="35.64" id="rotation_speed" onchange="set_rotation_speed(this)"
+      style="direction: rtl; width: 400px" />
   </div>
 
   <script>
@@ -215,6 +214,10 @@
 
         case "q":
           bluetoothSend(`+CR,TILTVALUE=0;`);
+          break;
+
+        case "r":
+          bluetoothSend(`+CT,TURNANGLE=360;`);
           break;
 
         default:
