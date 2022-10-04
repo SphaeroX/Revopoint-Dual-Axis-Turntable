@@ -55,6 +55,7 @@
     <p>
       <button id="sp_step_back">sp_step_back</button>
     </p>
+    <p id="sp_status" style="color:red;"></p>
   </div>
 
   <div id="info" style="background-color:greenyellow">
@@ -85,13 +86,21 @@
       return server;
     }
 
+
     async function bluetoothSend(cmd) {
       var enc = new TextEncoder();
       const service = await server.getPrimaryService(0xffe0);
       const characteristic = await service.getCharacteristic(0xffe1);
+      await characteristic.writeValue(enc.encode(cmd));
+      var read = await characteristic.readValue();
 
-      characteristic.writeValue(enc.encode(cmd));
+      var read_string = await new TextDecoder().decode(read);
+
+      console.log(read_string);
+
+      return await read_string;
     }
+
 
     function set_rotation_speed(event) {
       console.log(`+CT,TURNSPEED=${event.value};`);
@@ -99,6 +108,10 @@
     }
 
     document.getElementById("sp_start").addEventListener("click", (event) => {
+      sp_current_step = 0;
+      document.getElementById('sp_status').innerHTML = `Starting Interval`;
+
+
       spInterval = setInterval(() => {
         sp_current_step++;
 
@@ -106,17 +119,22 @@
           `+CT,TURNANGLE=${document.getElementById("sp_turnangle").value};`
         );
 
+        document.getElementById('sp_status').innerHTML = `Step: ${sp_current_step}`;
+
         if (
           sp_current_step ==
           parseInt(document.getElementById("sp_steps").value)
+
         ) {
           clearInterval(spInterval);
+          document.getElementById('sp_status').innerHTML = '';
         }
       }, parseInt(document.getElementById("sp_pause").value));
     });
 
     document.getElementById("sp_stop").addEventListener("click", (event) => {
       sp_current_step = 0;
+      document.getElementById('sp_status').innerHTML = '';
       clearInterval(spInterval);
     });
 
@@ -185,11 +203,11 @@
       }
       switch (e.key) {
         case "d":
-          bluetoothSend("+CT,TURNANGLE=1;");
+          bluetoothSend("+CT,TURNANGLE=15;");
           break;
 
         case "a":
-          bluetoothSend("+CT,TURNANGLE=-1;");
+          bluetoothSend("+CT,TURNANGLE=-15;");
           break;
 
         case "w":
@@ -219,7 +237,7 @@
           break;
 
         case "r":
-          bluetoothSend(`+CT,TURNANGLE=360;`);
+          bluetoothSend(`+CT,TURNCONTINUE=-1;`);
           break;
 
         default:
